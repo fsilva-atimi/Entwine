@@ -24,30 +24,24 @@
 
 import Combine
 
-/// A container for cancellables that will be cancelled when the bag is deallocated or cancelled itself
-public final class CancellableBag: Cancellable {
-    
-    public init() {}
-    
-    private var cancellables = [AnyCancellable]()
-    
-    /// Adds a cancellable to the bag which will have its `.cancel()` method invoked
-    /// when the bag is deallocated or cancelled itself
-    public func add<C: Cancellable>(_ cancellable: C) {
-        cancellables.append(AnyCancellable { cancellable.cancel() })
-    }
-    
-    /// Empties the bag and cancels each contained item
-    public func cancel() {
-        cancellables.removeAll()
-    }
+public final class CancellableBag: Cancellable
+{
+	public init() {}
+
+	private var cancelBag = Set<AnyCancellable>()
+
+	public func insert<C: Cancellable>(_ cancellable: C) {
+		cancelBag.insert(AnyCancellable { cancellable.cancel() })
+	}
+
+	public func cancel() {
+		cancelBag.removeAll()
+	}
 }
 
-// MARK: - Cancellable extension
-
-public extension Cancellable {
-    /// Adds this cancellable to the passed `CancellationBag`
-    func cancelled(by cancellationBag: CancellableBag) {
-        cancellationBag.add(self)
-    }
+public extension Cancellable
+{
+	func cancelled(by cancelBag: CancellableBag) {
+		cancelBag.insert(self)
+	}
 }

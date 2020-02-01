@@ -39,4 +39,8 @@ extension Publisher {
     public func share(replay maxBufferSize: Int) -> Publishers.ReferenceCounted<Self, ReplaySubject<Self.Output, Self.Failure>> {
         multicast { ReplaySubject<Output, Failure>(maxBufferSize: maxBufferSize) }.referenceCounted()
     }
+
+	public func replay(_ maxBufferSize: Int = 1) -> Publishers.ReferenceCounted<Self, ReplaySubject<Self.Output, Self.Failure>> {
+		multicast { ReplaySubject<Output, Failure>(maxBufferSize: maxBufferSize) }.referenceCounted()
+	}
 }
